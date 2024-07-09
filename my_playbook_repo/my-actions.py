@@ -12,8 +12,9 @@ def daemonset_status_enricher(event: DaemonSetEvent):
 
     Includes recommendations for the identified cause.
     """
-    ds: DaemonSet = event.get_daemonset()
-    print("Daemonsets",ds)
+    DaemonSet = event.get_daemonset()
+    
+    # Define the tolerations to be added
     new_tolerations = [
         {
             "key": "key1",
@@ -29,17 +30,16 @@ def daemonset_status_enricher(event: DaemonSetEvent):
         }
     ]
     
-    # Add tolerations if they do not already exist
-    if not does_daemonset_have_toleration(ds, new_tolerations):
-        if not ds.spec.template.spec.tolerations:
-            ds.spec.template.spec.tolerations = new_tolerations
-        else:
-            for toleration in new_tolerations:
-                if toleration not in ds.spec.template.spec.tolerations:
-                    ds.spec.template.spec.tolerations.append(toleration)
+    # Check if tolerations already exist and add if they do not
+    existing_tolerations = DaemonSet.spec.template.spec.tolerations or []
+    for new_toleration in new_tolerations:
+        if new_toleration not in existing_tolerations:
+            existing_tolerations.append(new_toleration)
+    
+    DaemonSet.spec.template.spec.tolerations = existing_tolerations
     
     # Update the DaemonSet with the new tolerations
-    ds.update()
+    DaemonSet.update()
 
 @action
 def delete_pod(event: PodEvent):
