@@ -47,6 +47,7 @@ def delete_pod(event: PodEvent):
     """
     Deletes a pod
     """
+    print("---------------------------- Pod -------------------------------------")
     if not event.get_pod():
         raise ActionException(ErrorCodes.RESOURCE_NOT_FOUND, "Failed to get the pod for deletion")
 
