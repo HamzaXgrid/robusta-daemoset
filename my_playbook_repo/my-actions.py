@@ -1,8 +1,8 @@
 from hikaru.model.rel_1_26 import DaemonSet
 from robusta.api import (
     DaemonSetEvent,
-    action,
-    does_daemonset_have_toleration,
+    action, PodEvent
+
 )
 
 @action
@@ -12,8 +12,9 @@ def daemonset_status_enricher(event: DaemonSetEvent):
 
     Includes recommendations for the identified cause.
     """
+    print("---------------------------- Daemon Set -------------------------------------")
     DaemonSet = event.get_daemonset()
-    
+    print("daemonset is ",DaemonSet)
     # Define the tolerations to be added
     new_tolerations = [
         {
