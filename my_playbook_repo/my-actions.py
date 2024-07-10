@@ -1,4 +1,4 @@
-from hikaru.model.rel_1_26 import DaemonSet, NodeList, Toleration
+from hikaru.model.rel_1_26 import Toleration
 from robusta.api import (
     DaemonSetEvent,
     action
@@ -16,11 +16,11 @@ def daemonset_status_enricher(event: DaemonSetEvent):
     DaemonSet = event.get_daemonset()
 
     # Load Kubernetes config
-    # config.load_incluster_config()
-    # v1 = client.CoreV1Api()
+    config.load_incluster_config()
+    v1 = client.CoreV1Api()
     
     # Get all nodes
-    nodes = NodeList.readNamespacedNodeList()
+    nodes = v1.list_node()
     print(nodes)
     # Extract taints from nodes
     new_tolerations = []
