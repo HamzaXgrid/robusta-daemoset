@@ -12,8 +12,7 @@ def daemonset_status_enricher(event: DaemonSetEvent):
 
     Includes recommendations for the identified cause.
     """
-    print("---------------------------- Daemon Set -------------------------------------")
-    DaemonSet = event.get_daemonset()
+    daemonSet = event.get_daemonset()
 
     # Load Kubernetes config
     config.load_incluster_config()
@@ -21,33 +20,35 @@ def daemonset_status_enricher(event: DaemonSetEvent):
     
     # Get all nodes
     nodes = v1.list_node()
-    print(nodes)
+
     # Extract taints from nodes
-    new_tolerations = []
+    newTolerations = []
 
     for node in nodes.items:
-        if node.spec.taints:
-            for taint in node.spec.taints:
-                new_tolerations.append(
-                    Toleration(
-                        key=taint.key,
-                        operator="Equal" if taint.value else "Exists",
-                        value=taint.value,
-                        effect=taint.effect,
-                        tolerationSeconds=taint.tolerationSeconds
+        labels = node.metadata.labels
+        if "node-role.kubernetes.io/master" not in labels:
+            if node.spec.taints:
+                for taint in node.spec.taints:
+                    newTolerations.append(
+                        Toleration(
+                            key=taint.key,
+                            operator="Equal" if taint.value else "Exists",
+                            value=taint.value,
+                            effect=taint.effect,
+                        )
                     )
-                )
     print("-----------------------------------")
-    print(new_tolerations)
+    print(newTolerations)
     # # Check if tolerations already exist and add if they do not
-    # existing_tolerations = DaemonSet.spec.template.spec.tolerations or []
-    # for new_toleration in new_tolerations:
-    #     if new_toleration not in existing_tolerations:
-    #         existing_tolerations.append(new_toleration)
-    # print(existing_tolerations)
-    # print("Tolerations Added")
-    # DaemonSet.spec.template.spec.tolerations = existing_tolerations
+    existingTolerations = daemonSet.spec.template.spec.tolerations or []
+    for new_toleration in newTolerations:
+        if new_toleration not in existingTolerations:
+            print("Existing tolerations are : ",existingTolerations)
+            print("New tolerations are : ",new_toleration)
+            existingTolerations.append(new_toleration)
+    print("Tolerations Added")
+    daemonSet.spec.template.spec.tolerations = existingTolerations
     
-    # # Update the DaemonSet with the new tolerations
-    # DaemonSet.update()
+    # Update the DaemonSet with the new tolerations
+    daemonSet.update()
 
