@@ -33,23 +33,13 @@ def daemonset_status_enricher(event: DaemonSetEvent):
     
     # # Check if tolerations already exist and add if they do not
     existing_tolerations = DaemonSet.spec.template.spec.tolerations or []
+    for new_toleration in new_tolerations:
+        if new_toleration not in existing_tolerations:
+            existing_tolerations.append(new_toleration)
     print(existing_tolerations)
-    # for new_toleration in new_tolerations:
-    #     if new_toleration not in existing_tolerations:
-    #         existing_tolerations.append(new_toleration)
+    print("Tolerations Added")
+    DaemonSet.spec.template.spec.tolerations = existing_tolerations
     
-    # DaemonSet.spec.template.spec.tolerations = existing_tolerations
-    
-    # # Update the DaemonSet with the new tolerations
-    # DaemonSet.update()
+    # Update the DaemonSet with the new tolerations
+    DaemonSet.update()
 
-# @action
-# def delete_pod(event: PodEvent):
-#     """
-#     Deletes a pod
-#     """
-#     print("---------------------------- Pod -------------------------------------")
-#     if not event.get_pod():
-#         raise ActionException(ErrorCodes.RESOURCE_NOT_FOUND, "Failed to get the pod for deletion")
-
-#     event.get_pod().delete()
