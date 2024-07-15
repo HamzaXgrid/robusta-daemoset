@@ -6,15 +6,14 @@ from kubernetes import client, config
 @action
 def resize_pv(event: PersistentVolumeEvent):
     config.load_incluster_config()
-    api = client.CoreV1Api()
     persistentVolume = event.get_persistentvolume()
-    #pvc_name = event.get_pvc_name()
-    #namespace = event.get_pvc_namespace()
+    api = client.CoreV1Api()
     persistentVolumeName = persistentVolume.metadata.name
     persistentVolumeDetails = api.read_persistent_volume(persistentVolumeName)
-    pvcName = persistentVolumeDetails.spec.claim_ref.name
-    pvcNameSpace = persistentVolumeDetails.spec.claim_ref.namespace
     print("PV is: ", persistentVolumeDetails)
+    if persistentVolumeDetails.spec.claim_ref is not None:# We are checking whether PV is claimed by any PVC.
+        pvcName = persistentVolumeDetails.spec.claim_ref.name
+        pvcNameSpace = persistentVolumeDetails.spec.claim_ref.namespace
     print("####################################################################")
     print(pvcNameSpace)
     # if not pvc_name or not namespace:
