@@ -1,11 +1,10 @@
 from robusta.api import ActionParams, PersistentVolumeEvent, action
 from kubernetes import client, config
 
-class ResizePvParams(ActionParams):
-    new_size: str
+
 
 @action
-def resize_pv(event: PersistentVolumeEvent, params: ResizePvParams):
+def resize_pv(event: PersistentVolumeEvent):
     config.load_incluster_config()
     v1 = client.CoreV1Api()
     persistentVolume = event.get_persistentvolume()
