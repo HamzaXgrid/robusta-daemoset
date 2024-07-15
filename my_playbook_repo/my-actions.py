@@ -13,9 +13,9 @@ def resize_pv(event: PersistentVolumeEvent):
     print("PV is: ", persistentVolumeDetails)
     if persistentVolumeDetails.spec.claim_ref is not None:# We are checking whether PV is claimed by any PVC.
         pvcName = persistentVolumeDetails.spec.claim_ref.name
+        print("####################################################################")
+        print(pvcName)
         pvcNameSpace = persistentVolumeDetails.spec.claim_ref.namespace
-    print("####################################################################")
-    print(pvcNameSpace)
     # if not pvc_name or not namespace:
     #     event.add_enrichment([{
     #         "type": "markdown",
