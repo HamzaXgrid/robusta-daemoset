@@ -16,6 +16,9 @@ def resize_pv(event: PersistentVolumeEvent):
         print("####################################################################")
         print(pvcName)
         pvcNameSpace = persistentVolumeDetails.spec.claim_ref.namespace
+    else:
+        print("#############################7######################################")
+        print(persistentVolumeDetails.spec.claim_ref.name)
     # if not pvc_name or not namespace:
     #     event.add_enrichment([{
     #         "type": "markdown",
