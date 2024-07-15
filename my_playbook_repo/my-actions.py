@@ -15,6 +15,7 @@ def resize_pv(event: PersistentVolumeEvent):
     print(pv)
     print("------------------")
     print(pv_claimref)
+    pv.spec.capacity['storage'] = "3Gi"
     # persistentVolume = event.get_persistentvolume()
     # api = client.CoreV1Api()
     # persistentVolumeName = persistentVolume.metadata.name
