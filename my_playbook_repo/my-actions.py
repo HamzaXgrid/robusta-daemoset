@@ -1,24 +1,35 @@
 from robusta.api import  PersistentVolumeEvent, action
 from kubernetes import client, config
 
+from hikaru.model.rel_1_26 import (
+    PersistentVolumeClaim,
+    PersistentVolumeClaimVolumeSource,
 
+)
 
 @action
 def resize_pv(event: PersistentVolumeEvent):
     config.load_incluster_config()
-    persistentVolume = event.get_persistentvolume()
-    api = client.CoreV1Api()
-    persistentVolumeName = persistentVolume.metadata.name
-    persistentVolumeDetails = api.read_persistent_volume(persistentVolumeName)
-    print("PV is: ", persistentVolumeDetails)
-    if persistentVolumeDetails.spec.claim_ref is not None:# We are checking whether PV is claimed by any PVC.
-        pvcName = persistentVolumeDetails.spec.claim_ref.name
-        print("####################################################################")
-        print(pvcName)
-        pvcNameSpace = persistentVolumeDetails.spec.claim_ref.namespace
-    else:
-        print("#############################7######################################")
-        print(persistentVolumeDetails.spec.claim_ref.name)
+    pv = event.get_persistentvolume()
+    pv_claimref = pv.spec.claimRef
+    print(pv)
+    print("------------------")
+    print(pv_claimref)
+    # persistentVolume = event.get_persistentvolume()
+    # api = client.CoreV1Api()
+    # persistentVolumeName = persistentVolume.metadata.name
+    # persistentVolumeDetails = api.read_persistent_volume(persistentVolumeName)
+    # print("PV is: ", persistentVolumeDetails)
+    # if persistentVolumeDetails.spec.claim_ref is not None:# We are checking whether PV is claimed by any PVC.
+    #     pvcName = persistentVolumeDetails.spec.claim_ref.name
+    #     print("####################################################################")
+    #     print(pvcName)
+    #     pvcNameSpace = persistentVolumeDetails.spec.claim_ref.namespace
+    # else:
+    #     print("#############################7######################################")
+    #     print(persistentVolumeDetails.spec.claim_ref.name)
+
+
     # if not pvc_name or not namespace:
     #     event.add_enrichment([{
     #         "type": "markdown",
