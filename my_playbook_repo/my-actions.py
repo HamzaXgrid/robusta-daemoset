@@ -1,4 +1,4 @@
-from robusta.api import ActionParams, PersistentVolumeEvent, action
+from robusta.api import  PersistentVolumeEvent, action
 from kubernetes import client, config
 
 
@@ -6,11 +6,17 @@ from kubernetes import client, config
 @action
 def resize_pv(event: PersistentVolumeEvent):
     config.load_incluster_config()
-    v1 = client.CoreV1Api()
+    api = client.CoreV1Api()
     persistentVolume = event.get_persistentvolume()
     #pvc_name = event.get_pvc_name()
     #namespace = event.get_pvc_namespace()
-    print("PV is: ", persistentVolume)
+    persistentVolumeName = persistentVolume.metadata.name
+    persistentVolumeDetails = api.read_persistent_volume(persistentVolumeName)
+    pvcName = persistentVolumeDetails.spec.claim_ref.name
+    pvcNameSpace = persistentVolumeDetails.spec.claim_ref.namespace
+    print("PV is: ", persistentVolumeDetails)
+    print("####################################################################")
+    print(pvcNameSpace)
     # if not pvc_name or not namespace:
     #     event.add_enrichment([{
     #         "type": "markdown",
