@@ -15,7 +15,15 @@ def resize_pv(event: PersistentVolumeEvent):
     print(pv)
     print("------------------")
     print(pv_claimref)
-    pv.spec.capacity['storage'] = "3Gi"
+    v1 = client.CoreV1Api()
+    
+    # Apply the changes to the PersistentVolume
+    try:
+        v1.patch_persistent_volume(name=pv.metadata.name, body={"spec": {"capacity": {"storage": "3Gi"}}})
+        print(f"PersistentVolume {pv.metadata.name} resized successfully to 3Gi.")
+    except client.exceptions.ApiException as e:
+        print(f"An error occurred while resizing the PersistentVolume: {e}")
+    # pv.spec.capacity['storage'] = "3Gi"
     # persistentVolume = event.get_persistentvolume()
     # api = client.CoreV1Api()
     # persistentVolumeName = persistentVolume.metadata.name
