@@ -10,30 +10,29 @@ from hikaru.model.rel_1_26 import (
 @action
 def resize_pv(event: PersistentVolumeEvent):
     config.load_incluster_config()
-    persistentVolume = event.get_persistentvolume()
-    # pv_claimref = persistentVolume.spec.claimRef.name
-    print(persistentVolume)
-    print("------------------")
-    # print(pv_claimref)
-    # print("-------------")
-    print("Event: ",event)
     api = client.CoreV1Api()
+    persistentVolume = event.get_persistentvolume()
     persistentVolumeName = persistentVolume.metadata.name
     persistentVolumeDetails = api.read_persistent_volume(persistentVolumeName)
+    print(persistentVolumeDetails)
+    print("************************************")
+    print(persistentVolumeDetails.spec.capacity)
+    print("************************************")
     # Apply the changes to the PersistentVolume
     if persistentVolumeDetails.spec.claim_ref is not None:# We are checking whether PV is claimed by any PVC.
         pvcName = persistentVolumeDetails.spec.claim_ref.name
         pvcNameSpace = persistentVolumeDetails.spec.claim_ref.namespace
         persistentVolumeClaim = api.read_namespaced_persistent_volume_claim(name=pvcName, namespace=pvcNameSpace)
-        print("PVC name", pvcName)
-        print("PVC name", pvcNameSpace)
-        print("PVC claim ",persistentVolumeClaim)
-        print("PVC claim ",persistentVolumeClaim.spec.resources.requests.storage)
+        persistentVolumeClaimStorage = persistentVolumeClaim.spec.resources.requests['storage']
+        # print("PVC name", pvcName)
+        # print("PVC name", pvcNameSpace)
+        # print("PVC claim ",persistentVolumeClaim)
+        print("PVC claim ",persistentVolumeClaimStorage)
     else:
         print("Not Available")
     try:
-        api.patch_persistent_volume(name=persistentVolume.metadata.name, body={"spec": {"capacity": {"storage": "1Gi"}}})
-        print(f"PersistentVolume {persistentVolume.metadata.name} resized successfully to 1Gi.")
+        api.patch_persistent_volume(name=persistentVolume.metadata.name, body={"spec": {"capacity": {"storage": "4Gi"}}})
+        print(f"PersistentVolume {persistentVolume.metadata.name} resized successfully to 4Gi.")
     except client.exceptions.ApiException as e:
         print(f"An error occurred while resizing the PersistentVolume: {e}")
     # pv.spec.capacity['storage'] = "3Gi"
