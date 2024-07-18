@@ -10,19 +10,27 @@ from hikaru.model.rel_1_26 import (
 @action
 def resize_pv(event: PersistentVolumeEvent):
     config.load_incluster_config()
-    pv = event.get_persistentvolume()
-    pv_claimref = pv.spec.claimRef
-    print(pv)
+    persistentVolume = event.get_persistentvolume()
+    # pv_claimref = persistentVolume.spec.claimRef.name
+    print(persistentVolume)
     print("------------------")
-    print(pv_claimref)
-    print("-------------")
-    print(event)
-    v1 = client.CoreV1Api()
-    
+    # print(pv_claimref)
+    # print("-------------")
+    print("Event: ",event)
+    api = client.CoreV1Api()
+    persistentVolumeName = persistentVolume.metadata.name
+    persistentVolumeDetails = api.read_persistent_volume(persistentVolumeName)
     # Apply the changes to the PersistentVolume
+    if persistentVolumeDetails.spec.claim_ref is not None:# We are checking whether PV is claimed by any PVC.
+        pvcName = persistentVolumeDetails.spec.claim_ref.name
+        pvcNameSpace = persistentVolumeDetails.spec.claim_ref.namespace
+        print("PVC name", pvcName)
+        print("PVC name", pvcNameSpace)
+    else:
+        print("Not Available")
     try:
-        v1.patch_persistent_volume(name=pv.metadata.name, body={"spec": {"capacity": {"storage": "1Gi"}}})
-        print(f"PersistentVolume {pv.metadata.name} resized successfully to 1Gi.")
+        v1.patch_persistent_volume(name=persistentVolume.metadata.name, body={"spec": {"capacity": {"storage": "1Gi"}}})
+        print(f"PersistentVolume {persistentVolume.metadata.name} resized successfully to 1Gi.")
     except client.exceptions.ApiException as e:
         print(f"An error occurred while resizing the PersistentVolume: {e}")
     # pv.spec.capacity['storage'] = "3Gi"
