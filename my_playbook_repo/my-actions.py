@@ -27,7 +27,7 @@ def resize_pv(event: PersistentVolumeEvent):
         persistentVolumeClaim = api.read_namespaced_persistent_volume_claim(name=pvcName, namespace=pvcNameSpace)
         print("PVC name", pvcName)
         print("PVC name", pvcNameSpace)
-        print("PVC claim ",persistentVolumeClaim.resources.requests['storage'])
+        print("PVC claim ",persistentVolumeClaim)
     else:
         print("Not Available")
     try:
