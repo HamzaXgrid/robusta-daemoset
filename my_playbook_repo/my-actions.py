@@ -28,7 +28,7 @@ def resize_pv(event: PersistentVolumeEvent):
         print("PVC name", pvcName)
         print("PVC name", pvcNameSpace)
         print("PVC claim ",persistentVolumeClaim)
-        print("PVC claim ",persistentVolumeClaim.spec.resources)
+        print("PVC claim ",persistentVolumeClaim.spec.resources.requests.storage)
     else:
         print("Not Available")
     try:
