@@ -16,7 +16,7 @@ def resize_pv(event: PersistentVolumeEvent):
     persistentVolumeDetails = api.read_persistent_volume(persistentVolumeName)
     print(persistentVolumeDetails)
     print("************************************")
-    print(persistentVolumeDetails.spec.capacity)
+    print(persistentVolumeDetails.spec.capacity['storage'])
     print("************************************")
     # Apply the changes to the PersistentVolume
     if persistentVolumeDetails.spec.claim_ref is not None:# We are checking whether PV is claimed by any PVC.
