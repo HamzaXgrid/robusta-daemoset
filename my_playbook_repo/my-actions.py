@@ -29,7 +29,7 @@ def resize_pv(event: PersistentVolumeEvent):
     else:
         print("Not Available")
     try:
-        v1.patch_persistent_volume(name=persistentVolume.metadata.name, body={"spec": {"capacity": {"storage": "1Gi"}}})
+        api.patch_persistent_volume(name=persistentVolume.metadata.name, body={"spec": {"capacity": {"storage": "1Gi"}}})
         print(f"PersistentVolume {persistentVolume.metadata.name} resized successfully to 1Gi.")
     except client.exceptions.ApiException as e:
         print(f"An error occurred while resizing the PersistentVolume: {e}")
