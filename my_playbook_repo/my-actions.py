@@ -24,8 +24,10 @@ def resize_pv(event: PersistentVolumeEvent):
     if persistentVolumeDetails.spec.claim_ref is not None:# We are checking whether PV is claimed by any PVC.
         pvcName = persistentVolumeDetails.spec.claim_ref.name
         pvcNameSpace = persistentVolumeDetails.spec.claim_ref.namespace
+        persistentVolumeClaim = api.read_namespaced_persistent_volume_claim(name=pvcName, namespace=pvcNameSpace)
         print("PVC name", pvcName)
         print("PVC name", pvcNameSpace)
+        print("PVC claim ",persistentVolumeClaim.resources.requests['storage'])
     else:
         print("Not Available")
     try:
